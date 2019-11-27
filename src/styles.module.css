@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+}
+
+.active {
+  opacity: 0.5;
+}
+
+.element {
+  cursor: pointer;
+}
+.disabled,
+.active {
+  cursor: default;
+}

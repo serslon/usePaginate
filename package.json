@@ -1,0 +1,48 @@
+{
+  "name": "paginatehook",
+  "version": "1.0.0",
+  "description": "The paginate hook for the React Library",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
+  },
+  "keywords": [
+    "paginate",
+    "hook",
+    "react",
+    "pagging"
+  ],
+  "author": "Sergii Solonyna sergeysolonina@gmail.com",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@storybook/addon-actions": "^5.2.6",
+    "@storybook/addon-knobs": "^5.2.6",
+    "@storybook/addon-links": "^5.2.6",
+    "@storybook/addons": "^5.2.6",
+    "@storybook/react": "^5.2.6",
+    "@types/classnames": "^2.2.9",
+    "@types/react": "^16.9.11",
+    "@types/storybook__react": "^4.0.2",
+    "awesome-typescript-loader": "^5.2.1",
+    "babel-loader": "^8.0.6",
+    "classnames": "^2.2.6",
+    "css-module-types": "^0.2.2",
+    "prettier": "^1.19.1",
+    "react": "^16.12.0",
+    "react-docgen-typescript-loader": "^3.3.0",
+    "typescript": "^3.7.2"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "semi": true,
+    "singleQuote": true,
+    "jsxSingleQuote": true,
+    "trailingComma": "all",
+    "jsxBracketSameLine": true,
+    "endOfLine": "lf"
+  }
+}
