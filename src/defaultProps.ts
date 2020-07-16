@@ -8,13 +8,14 @@ import {
 } from './type';
 import { PaginateElement } from './PaginateElement';
 import styles from './styles.module.css';
+import React from 'react';
 
 const functionPaginate: FunctionPaginateType = ({ maxPages, morePage, currPage, totalPages }) => {
   const countOfResult: number = maxPages < totalPages ? maxPages : totalPages;
   const delta: number =
     countOfResult >= totalPages || currPage <= 4 ? 1 : totalPages - currPage < 4 ? totalPages - 6 : currPage - 3;
 
-  const result: Array<PaginateElementType> = Array(Math.ceil(countOfResult))
+  const result: Array<PaginateElementType> = Array<string>(Math.ceil(countOfResult))
     .fill('')
     .map((_, idx) => {
       const title =
@@ -62,7 +63,7 @@ const proxyObject = (obj: any) =>
 let limit = 20;
 let offset = 0;
 
-export let defaultProps: PaginateContextType = {
+let defaultProps: PaginateContextType = {
   total: 0,
   limit: limit,
   offset: offset,
@@ -75,35 +76,75 @@ export let defaultProps: PaginateContextType = {
   disableClass: styles.disabled,
   elementClass: styles.element,
   functionPaginate,
-  useNextPrev: proxyObject(defaultUseNextPrev),
-  useLastFirst: proxyObject(defaultUseLastFirst),
+  useNextPrev: defaultUseNextPrev,
+  useLastFirst: null,
   PaginateComponent: PaginateElement,
-  onClick: (p: number) => (next: number) => (offset = (next - 1) * limit),
+  onClick: (next: number) => (offset = (next - 1) * limit),
 };
 
+type PropsColumn = keyof PaginateContextType;
+
+defaultProps = new Proxy(defaultProps, {
+  set(target, prop: PropsColumn, val) {
+    if (['total', 'limit', 'offset', 'maxPages', 'currPage', 'totalPages'].some(t => t === prop)) {
+      if (typeof val !== 'number') {
+        console.warn(`The value ${val} for the props ${prop} is not a number`);
+        return false;
+      }
+      //@ts-ignore
+      target[prop] = val;
+    } else if (['className', 'activeClass', 'elementClass', 'disableClass'].some(t => t === prop)) {
+      if (typeof val !== 'string') {
+        console.warn(`The value ${val} for the props ${prop} is not a string`);
+        return false;
+      }
+      //@ts-ignore
+      target[prop] = val;
+    } else if (prop === 'morePage') {
+      const type = typeof prop;
+      if (type !== 'string' && !React.isValidElement(prop)) {
+        console.warn(`The value ${val} for the props ${prop} is not a string or React element`);
+        return false;
+      }
+      target.morePage = val;
+    } else if (prop === 'PaginateComponent') {
+      if (!React.isValidElement(val())) {
+        console.warn(`The value ${val} for the props ${prop} is not a React element`);
+        return false;
+      }
+      target.PaginateComponent = val;
+    } else if (prop === 'functionPaginate') {
+      if (typeof val !== 'function') {
+        console.warn(`The value ${val} for the props ${prop} is not a function`);
+        return false;
+      }
+      target.functionPaginate = val;
+    } else if (prop === 'useNextPrev') {
+      if (typeof val === 'boolean') {
+        target.useNextPrev = val ? defaultUseNextPrev : null;
+      } else {
+        // TODO check deeply the val
+        target.useNextPrev = { ...defaultUseNextPrev, ...val };
+      }
+    } else if (prop === 'useLastFirst') {
+      if (typeof val === 'boolean') {
+        target.useLastFirst = val ? defaultUseLastFirst : null;
+      } else {
+        // TODO check deeply the val
+        target.useLastFirst = { ...defaultUseLastFirst, ...val };
+      }
+    }
+    return true;
+  },
+});
+
+export { defaultProps };
+
 export const paginateConfig = (props: PaginationPropsType) => {
-  const { useNextPrev, useLastFirst, ...customProps } = props;
-  if (useLastFirst !== undefined) {
-    if (typeof useLastFirst === 'boolean') {
-      defaultProps.useLastFirst = useLastFirst ? defaultUseLastFirst : null;
-    } else {
-      defaultProps.useLastFirst = {
-        ...defaultUseLastFirst,
-        ...useLastFirst,
-      };
+  for (let key in props) {
+    if (key in defaultProps) {
+      //@ts-ignore
+      defaultProps[key] = props[key];
     }
   }
-
-  if (useNextPrev) {
-    if (typeof useNextPrev === 'boolean') {
-      defaultProps.useNextPrev = useNextPrev ? defaultUseNextPrev : null;
-    } else {
-      defaultProps.useNextPrev = {
-        ...defaultUseNextPrev,
-        ...useNextPrev,
-      };
-    }
-  }
-
-  defaultProps = { ...defaultProps, ...customProps };
 };

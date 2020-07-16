@@ -2,6 +2,7 @@ import React from 'react';
 // import { render, fireEvent, waitForElement } from '@testing-library/react';
 import { paginateConfig, defaultProps } from '../src/defaultProps';
 import { FunctionPaginateType } from '../src/type';
+import { PaginateElement } from '../src/PaginateElement';
 
 describe('Default Config', () => {
   test('default options', () => {
@@ -9,19 +10,23 @@ describe('Default Config', () => {
       total,
       limit,
       offset,
-      // onClick,
+      onClick,
       morePage,
       maxPages,
       className,
       activeClass,
-      // useNextPrev,
-      // useLastFirst,
+      useNextPrev,
+      useLastFirst,
       disableClass,
       elementClass,
     } = defaultProps;
-    // expect(useLastFirst).toBe(false);
-    // expect(useNextPrev).toBe(true);
-    // expect(opnClick). ???
+    expect(typeof useNextPrev).toBe('object');
+    expect(useNextPrev?.nextTitle).toBe('>');
+    expect(useNextPrev?.prevTitle).toBe('<');
+    expect(useNextPrev?.NextComponent).toBe(PaginateElement);
+    expect(useNextPrev?.PrevComponent).toBe(PaginateElement);
+    expect(useLastFirst).toBeNull();
+    expect(typeof onClick).toBe('function');
     expect(total).toBe(0);
     expect(limit).toBe(20);
     expect(offset).toBe(0);
@@ -46,6 +51,8 @@ describe('Default Config', () => {
       disableClass: 'disable-paginate',
       functionPaginate: myFunctionPaginate,
       PaginateComponent: MyPComponent,
+      useLastFirst: false,
+      useNextPrev: false,
     });
     const {
       limit,
@@ -57,6 +64,8 @@ describe('Default Config', () => {
       disableClass,
       functionPaginate,
       PaginateComponent,
+      useLastFirst,
+      useNextPrev,
     } = defaultProps;
     expect(limit).toBe(40);
     expect(maxPages).toBe(9);
@@ -67,18 +76,81 @@ describe('Default Config', () => {
     expect(disableClass).toBe('disable-paginate');
     expect(functionPaginate).toBe(myFunctionPaginate);
     expect(PaginateComponent).toBe(MyPComponent);
-  });
-
-  test('Disable useNextPrev', async () => {
-    await paginateConfig({ useNextPrev: false });
-    const { useNextPrev } = defaultProps;
-    console.log(useNextPrev);
     expect(useNextPrev).toBeNull();
+    expect(useLastFirst).toBeNull();
   });
 
-  // test('Disable useLastFirst', () => {
-  //   paginateConfig({ useLastFirst: false });
-  //   const { useLastFirst } = defaultProps;
-  //   expect(useLastFirst).toBeUndefined();
-  // });
+  test('Check customs params as empty object', () => {
+    paginateConfig({
+      useLastFirst: {},
+      useNextPrev: {},
+    });
+    let { useNextPrev, useLastFirst } = defaultProps;
+    expect(typeof useNextPrev).toBe('object');
+    expect(useNextPrev?.nextTitle).toBe('>');
+    expect(useNextPrev?.prevTitle).toBe('<');
+    expect(useNextPrev?.NextComponent).toBe(PaginateElement);
+    expect(useNextPrev?.PrevComponent).toBe(PaginateElement);
+    expect(typeof useLastFirst).toBe('object');
+    expect(useLastFirst?.firstTitle).toBe('<<');
+    expect(useLastFirst?.lastTitle).toBe('>>');
+    expect(useLastFirst?.FirstComponent).toBe(PaginateElement);
+    expect(useLastFirst?.LastComponent).toBe(PaginateElement);
+  });
+
+  test('Check customs params as boolean', () => {
+    paginateConfig({
+      useLastFirst: true,
+      useNextPrev: true,
+    });
+    let { useNextPrev, useLastFirst } = defaultProps;
+    expect(typeof useNextPrev).toBe('object');
+    expect(useNextPrev?.nextTitle).toBe('>');
+    expect(useNextPrev?.prevTitle).toBe('<');
+    expect(useNextPrev?.NextComponent).toBe(PaginateElement);
+    expect(useNextPrev?.PrevComponent).toBe(PaginateElement);
+    expect(typeof useLastFirst).toBe('object');
+    expect(useLastFirst?.firstTitle).toBe('<<');
+    expect(useLastFirst?.lastTitle).toBe('>>');
+    expect(useLastFirst?.FirstComponent).toBe(PaginateElement);
+    expect(useLastFirst?.LastComponent).toBe(PaginateElement);
+  });
+
+  test('Check customs params as part pof params #1', () => {
+    paginateConfig({
+      useLastFirst: { lastTitle: '++', firstTitle: '++' },
+      useNextPrev: { nextTitle: '+', prevTitle: '+' },
+    });
+    let { useNextPrev, useLastFirst } = defaultProps;
+    expect(typeof useNextPrev).toBe('object');
+    expect(useNextPrev?.nextTitle).toBe('+');
+    expect(useNextPrev?.prevTitle).toBe('+');
+    expect(useNextPrev?.NextComponent).toBe(PaginateElement);
+    expect(useNextPrev?.PrevComponent).toBe(PaginateElement);
+    expect(typeof useLastFirst).toBe('object');
+    expect(useLastFirst?.firstTitle).toBe('++');
+    expect(useLastFirst?.lastTitle).toBe('++');
+    expect(useLastFirst?.FirstComponent).toBe(PaginateElement);
+    expect(useLastFirst?.LastComponent).toBe(PaginateElement);
+  });
+
+  test('Check customs params as part of params #2', () => {
+    const MyComponent = () => <div />;
+    const MyComponent2 = () => <span />;
+    paginateConfig({
+      useLastFirst: { LastComponent: MyComponent, FirstComponent: MyComponent2 },
+      useNextPrev: { PrevComponent: MyComponent, NextComponent: MyComponent2 },
+    });
+    let { useNextPrev, useLastFirst } = defaultProps;
+    expect(typeof useNextPrev).toBe('object');
+    expect(useNextPrev?.nextTitle).toBe('>');
+    expect(useNextPrev?.prevTitle).toBe('<');
+    expect(useNextPrev?.NextComponent).toBe(MyComponent2);
+    expect(useNextPrev?.PrevComponent).toBe(MyComponent);
+    expect(typeof useLastFirst).toBe('object');
+    expect(useLastFirst?.firstTitle).toBe('<<');
+    expect(useLastFirst?.lastTitle).toBe('>>');
+    expect(useLastFirst?.FirstComponent).toBe(MyComponent2);
+    expect(useLastFirst?.LastComponent).toBe(MyComponent);
+  });
 });

@@ -17,11 +17,25 @@ export type UseLastFirstType = {
   FirstComponent: ElementType;
 };
 
+export type UseLastFirstIncomeType = {
+  lastTitle?: string | ElementType;
+  firstTitle?: string | ElementType;
+  LastComponent?: ElementType;
+  FirstComponent?: ElementType;
+};
+
 export type UseNextPrevType = {
   nextTitle: string | ElementType;
   prevTitle: string | ElementType;
   NextComponent: ElementType;
   PrevComponent: ElementType;
+};
+
+export type UseNextPrevIncomeType = {
+  nextTitle?: string | ElementType;
+  prevTitle?: string | ElementType;
+  NextComponent?: ElementType;
+  PrevComponent?: ElementType;
 };
 
 export type PaginationPropsType = {
@@ -32,8 +46,8 @@ export type PaginationPropsType = {
   activeClass?: string;
   elementClass?: string;
   disableClass?: string;
-  useNextPrev?: boolean | UseLastFirstType;
-  useLastFirst?: boolean | UseNextPrevType;
+  useNextPrev?: boolean | UseNextPrevIncomeType;
+  useLastFirst?: boolean | UseLastFirstIncomeType;
   functionPaginate?: FunctionPaginateType;
   PaginateComponent?: ElementType;
 };
